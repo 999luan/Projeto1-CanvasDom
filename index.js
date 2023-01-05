@@ -42,6 +42,7 @@ function createImage(imageSrc) {
 // console.log(context);
 
 //Classe define nosso Player
+
 class Player {
   constructor() {
     this.speed = 8;
@@ -55,6 +56,7 @@ class Player {
     };
     this.width = 40 * 4;
     this.height = 32 * 4;
+    this.frameCount = 0;
 
     this.image = createImage(playerIdle.src);
     this.frames = 0;
@@ -92,15 +94,12 @@ class Player {
     );
   }
   update() {
-    console.log(this.frames);
-    this.frames++;
-    if (this.frames > 5) this.frames = 0;
+    this.frameCount++;
+    this.frames = Math.floor(this.frameCount / 10) % 6;
     this.draw();
 
     this.position.y += this.velocity.y;
     this.position.x += this.velocity.x;
-
-    //adicionar gravidsade na vewlocidade aumentar a velocidade de queda, no If quando chega no pontro 0 do canvas ele muyda gravidade para 0
 
     if (this.position.y + this.height + this.velocity.y <= canvas.height - 1) {
       this.velocity.y += gravity;
