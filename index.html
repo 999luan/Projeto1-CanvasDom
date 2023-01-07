@@ -1,3 +1,8 @@
+<link
+  href="https://fonts.googleapis.com/css?family=Press+Start+2P"
+  rel="stylesheet"
+/>
+
 <style>
   body {
     margin: 0;
@@ -5,9 +10,46 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: "Press Start 2P", cursive;
+  }
+  button {
+    padding: 10px 20px;
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+  }
+  h1 {
+    margin: 0;
+    font-size: 50px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: white;
+  }
+  .mainMenu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
   }
 </style>
 
-<canvas></canvas>
+<audio id="song" preload="auto" loop src="./assets/sound/cave.m4a.m4a"></audio>
+
+<div class="mainMenu">
+  <h1>Eu preciso de 5 minutos</h1>
+  <div>
+    <button id="start-button" onclick="audio.play()">Começar a aventura</button>
+  </div>
+</div>
+<div class="mainMenu">
+  <h1 id="timer" style="display: none">05:00</h1>
+  <canvas style="display: none"></canvas>
+</div>
 
 <script src="index.js" type="module"></script>
+<script>
+  let audio = document.querySelector("#song");
+</script>

@@ -2,6 +2,14 @@
 
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
+const song = document.querySelector("#song");
+const img = document.createElement("img");
+
+const startButton = document.querySelector("#start-button");
+const soundButton = document.querySelector("sound-button");
+
+startButton.addEventListener("click", startGame);
+
 //Tamanho do canvas de acordo com o espoaço da janela
 canvas.width = 1024;
 canvas.height = 576;
@@ -14,11 +22,17 @@ const gravity = 1.5;
 const platformSprite = new Image();
 const hillsSprite = new Image();
 const backgroundSprite = new Image();
+const background2Sprite = new Image();
+const background3Sprite = new Image();
+
 const plataformaSmallSprite = new Image();
 
 platformSprite.src = "./assets/plataforma.png";
 hillsSprite.src = "./assets/hills.png";
 backgroundSprite.src = "./assets/background.png";
+background2Sprite.src = "./assets/background2.png";
+background3Sprite.src = "./assets/background3.png";
+
 plataformaSmallSprite.src = "./assets/plataformaSmall.png";
 
 const playerIdle = new Image();
@@ -40,12 +54,65 @@ function createImage(imageSrc) {
 //verificacoes
 // console.log(canvas);
 // console.log(context);
+function startGame() {
+  const canvas = document.querySelector("canvas");
+  const intro = document.querySelector("div");
+  const timer = document.querySelector("#timer");
+
+  let countdown = 5 * 60;
+  //   let countdown = 5 * 60; <<< 5 minutos
+
+  const interval = setInterval(() => {
+    countdown--;
+
+    // Calcula minutos restando
+    const minutes = Math.floor(countdown / 60);
+    const seconds = countdown % 60;
+
+    // update com o tempo sobrando
+    timer.textContent = `${minutes}:${seconds}`;
+
+    if (countdown === 0) {
+      clearInterval(interval);
+      triggerFinal();
+    }
+  }, 1000);
+
+  canvas.style.display = "block";
+  timer.style.display = "block";
+
+  intro.remove();
+}
+
+function triggerFinal() {
+  // Quando o contador terminar executa evento
+  const canvas = document.querySelector("canvas");
+  const timer = document.querySelector("#timer");
+
+  canvas.style.display = "none";
+  timer.style.display = "none";
+
+  const img = document.createElement("img");
+  if (scrollOffset < 500) {
+    img.src = "./assets/finalEscuro.png";
+  }
+  if (scrollOffset > 2000) {
+    img.src = "./assets/finalMeio.png";
+  }
+  if (scrollOffset > 20000) {
+    img.src = "./assets/finaldeserto.png";
+  }
+  img.style.display = "block";
+  img.style.width = "100%";
+  img.style.height = "100%";
+  document.body.appendChild(img);
+}
 
 //Classe define nosso Player
 
 class Player {
   constructor() {
-    this.speed = 8;
+    this.speed = 9;
     this.position = {
       x: 100,
       y: 100,
@@ -167,46 +234,52 @@ let scrollOffset = 0;
 function init() {
   //chamando classes
   player = new Player();
+
   plataformas = [
+    //PLATAFORMAS DA DIREITA
     //as primeiras plataformas devem ser as aereas pois são desenhadas primeiro
 
-    //PLATAFORMAS DA DIREITA
-
     new Plataforma({
-      x:
-        createImage(platformSprite.src).width * 4 +
-        300 +
-        plataformaSmallSprite.width,
+      x: createImage(plataformas).width * 4 + 300 + plataformaSmallSprite.width,
       y: 270,
       image: plataformaSmallSprite,
     }),
+
+    new Plataforma({
+      x: -1,
+      y: 470,
+      image: plataformaSmallSprite,
+    }),
+
+    //plataformas normais
+
     new Plataforma({ x: -1, y: 470, image: platformSprite }),
-    new Plataforma({
-      x: createImage(platformSprite.src).width,
-      y: 470,
-      image: platformSprite,
-    }),
-    new Plataforma({
-      x: createImage(platformSprite.src).width * 2,
-      y: 470,
-      image: platformSprite,
-    }),
-    new Plataforma({
-      x: createImage(platformSprite.src).width * 3,
-      y: 470,
-      image: platformSprite,
-    }),
-    new Plataforma({
-      x: createImage(platformSprite.src).width * 4 + 300,
-      y: 470,
-      image: platformSprite,
-    }),
-    new Plataforma({
-      x: createImage(platformSprite.src).width * 5 + 700,
-      y: 470,
-      image: platformSprite,
-    }),
   ];
+  let previousWidth = 0;
+  let previousHighWidth = 0;
+  for (let i = 0; i < 60; i++) {
+    const randomNumber = Math.floor(Math.random() * (600 - 400 + 1) + 400);
+    plataformas.push(
+      new Plataforma({
+        x: previousHighWidth + randomNumber,
+        y: Math.floor(Math.random() * (470 - 370 + 1) + 370),
+        image: plataformaSmallSprite,
+      })
+    );
+    previousHighWidth += randomNumber;
+  }
+
+  for (let i = 0; i < 200; i++) {
+    const randomNumber = Math.floor(Math.random() * (930 - 800 + 1) + 800);
+    plataformas.push(
+      new Plataforma({
+        x: previousWidth * 2 + randomNumber,
+        y: 500,
+        image: platformSprite,
+      })
+    );
+    previousWidth += randomNumber;
+  }
 
   //PLATAFORMAS DA ESQUERDA
 
@@ -215,10 +288,21 @@ function init() {
   //OBJETOS DA DIREITA
   genericObjects = [
     new GenericObject({
-      x: -1,
+      x: 0,
       y: 0,
       image: backgroundSprite,
     }),
+    new GenericObject({
+      x: createImage(backgroundSprite.src).width * 2,
+      y: 0,
+      image: background2Sprite,
+    }),
+    new GenericObject({
+      x: background3Sprite.width,
+      y: 0,
+      image: background3Sprite,
+    }),
+
     new GenericObject({ x: -1, y: 0, image: hillsSprite }),
   ];
 
@@ -245,17 +329,20 @@ function animate() {
   player.update();
 
   //movimentacao utilizando objeto keys e switch
+
   if (keys.right.pressed && player.position.x < 400) {
     player.velocity.x = player.speed;
   } else if (
     (keys.left.pressed && player.position.x > 100) ||
-    (keys.left.pressed && scrollOffset === 0 && player.position.x > 1)
+    (keys.left.pressed && scrollOffset === 0 && player.position.x > 1) ||
+    (keys.right.pressed && scrollOffset >= 14155)
   ) {
     player.velocity.x = -player.speed;
   } else {
     player.velocity.x *= 0.9;
 
     if (keys.right.pressed) {
+      // Move player to the right
       scrollOffset += player.speed;
       plataformas.forEach((plataforma) => {
         plataforma.position.x -= player.speed;
@@ -264,7 +351,8 @@ function animate() {
         genericObject.position.x -= player.speed - 2;
       });
     } else if (keys.left.pressed && scrollOffset > 0) {
-      scrollOffset += player.speed;
+      // Move player to the left
+      scrollOffset -= player.speed;
       plataformas.forEach((plataforma) => {
         plataforma.position.x += player.speed;
       });
@@ -274,16 +362,6 @@ function animate() {
     }
   }
 
-  //win ao chegar no final
-  //condicoes de vitoria
-  if (scrollOffset > platformSprite.width * 5 + 700 - 5) {
-    console.log("You win");
-  }
-  // //win na esquerda
-  // if (scrollOffset < platformSprite.width * 5 + 700 - 5) {
-  //   console.log("You win");
-  // }
-  //win por tempo parado
   //caiu no buraco
   if (player.position.y > canvas.height) {
     init();
@@ -314,7 +392,6 @@ window.addEventListener("keydown", ({ keyCode }) => {
   //   console.log(keyCode);
   switch (keyCode) {
     case 65:
-      console.log("left");
       keys.left.pressed = true;
       player.currentSprite = player.sprites.run.left;
       player.cropWidth = player.sprites.run.cropWidth;
@@ -322,7 +399,6 @@ window.addEventListener("keydown", ({ keyCode }) => {
 
       break;
     case 37:
-      console.log("left");
       keys.left.pressed = true;
       player.currentSprite = player.sprites.run.left;
       player.cropWidth = player.sprites.run.cropWidth;
@@ -330,10 +406,8 @@ window.addEventListener("keydown", ({ keyCode }) => {
 
       break;
     case 83:
-      console.log("down");
       break;
     case 40:
-      console.log("down");
       break;
     case 68:
       console.log("right");
