@@ -130,17 +130,17 @@ function triggerFinal() {
   if (scrollOffset < 500) {
     img.src = "./assets/finalEscuro.png";
   }
-  if (scrollOffset > 2000) {
+  if (scrollOffset > 2000 && scrollOffset < 13000) {
     img.src = "./assets/finalMeio.png";
   }
-  if (scrollOffset > 20000) {
+  if (scrollOffset > 13000) {
     img.src = "./assets/finaldeserto.png";
   }
   img.style.display = "block";
   img.style.width = "100%";
   img.style.height = "100%";
   document.body.appendChild(img);
-  clearInterval(interval);
+  // clearInterval(interval);
 }
 
 //Classe define nosso Player
