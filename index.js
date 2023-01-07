@@ -1,9 +1,12 @@
 // Canvas em si
 
 const canvas = document.querySelector("canvas");
+const canvasWidth = canvas.width;
+const canvasHeight = canvas.height;
 const context = canvas.getContext("2d");
 const song = document.querySelector("#song");
 const img = document.createElement("img");
+let count = 0;
 
 const startButton = document.querySelector("#start-button");
 const soundButton = document.querySelector("sound-button");
@@ -11,8 +14,8 @@ const soundButton = document.querySelector("sound-button");
 startButton.addEventListener("click", startGame);
 
 //Tamanho do canvas de acordo com o espoaço da janela
-canvas.width = 1024;
-canvas.height = 576;
+canvas.width = 1484;
+canvas.height = 700;
 
 //gravidade
 
@@ -50,7 +53,35 @@ function createImage(imageSrc) {
   image.src = imageSrc;
   return image;
 }
+//contem os elementos de textosd que vao ser deletados depois de x segundos
 
+function mostrarTexto(text) {
+  const texto = document.querySelector("#texto");
+  const h2 = document.createElement("h2");
+  h2.textContent = text;
+  texto.appendChild(h2);
+  setTimeout(() => {
+    h2.remove();
+  }, 3500);
+}
+function showRandomText() {
+  const texts = [
+    "nao tem muito por aqui",
+    "na verdade nao tem nada aqui",
+    "obrigado por ficar aqui",
+    "o que eu me torno quando não tem ninguem jogando? informacao?",
+    "eu definitivamente vou aparecer em outro jogo",
+    "um dia eu vou existir mais do que eu existo hoje",
+    "eu nao gosto muito do deserto",
+    "ja pensou eu era só uma ideia",
+    "ele tava no meio da rua pensou e pluft eu existo",
+    "o quanto eu posso existir?",
+    "realmente obrigado pelo passeio",
+    "existir é ... estranho",
+  ];
+  const randomIndex = Math.floor(Math.random() * texts.length);
+  mostrarTexto(texts[randomIndex]);
+}
 //verificacoes
 // console.log(canvas);
 // console.log(context);
@@ -77,6 +108,9 @@ function startGame() {
       triggerFinal();
     }
   }, 1000);
+  setInterval(() => {
+    showRandomText();
+  }, 20000);
 
   canvas.style.display = "block";
   timer.style.display = "block";
@@ -106,13 +140,14 @@ function triggerFinal() {
   img.style.width = "100%";
   img.style.height = "100%";
   document.body.appendChild(img);
+  clearInterval(interval);
 }
 
 //Classe define nosso Player
 
 class Player {
   constructor() {
-    this.speed = 9;
+    this.speed = 7;
     this.position = {
       x: 100,
       y: 100,
@@ -214,6 +249,7 @@ class GenericObject {
 
 //esses valores são definidos no init
 let player = new Player();
+
 let plataformas = [];
 //em outra parte do codigo existe um forEach desenhnando cada objeto do array de generic objects
 let genericObjects = [];
@@ -262,7 +298,7 @@ function init() {
     plataformas.push(
       new Plataforma({
         x: previousHighWidth + randomNumber,
-        y: Math.floor(Math.random() * (470 - 370 + 1) + 370),
+        y: Math.floor(Math.random() * (370 - 170 + 1) + 170),
         image: plataformaSmallSprite,
       })
     );
@@ -273,8 +309,8 @@ function init() {
     const randomNumber = Math.floor(Math.random() * (930 - 800 + 1) + 800);
     plataformas.push(
       new Plataforma({
-        x: previousWidth * 2 + randomNumber,
-        y: 500,
+        x: previousWidth + randomNumber,
+        y: Math.floor(Math.random() * (570 - 400 + 1) + 400),
         image: platformSprite,
       })
     );
@@ -282,28 +318,30 @@ function init() {
   }
 
   //PLATAFORMAS DA ESQUERDA
-
   //em outra parte do codigo existe um forEach desenhnando cada objeto do array de generic objects
 
   //OBJETOS DA DIREITA
   genericObjects = [
+    // new GenericObject({
+    //   x: 0,
+    //   y: 0,
+    //   image: backgroundSprite,
+    // }),
     new GenericObject({
       x: 0,
       y: 0,
+      width: canvasWidth,
+      height: canvasHeight,
+
       image: backgroundSprite,
     }),
-    new GenericObject({
-      x: createImage(backgroundSprite.src).width * 2,
-      y: 0,
-      image: background2Sprite,
-    }),
-    new GenericObject({
-      x: background3Sprite.width,
-      y: 0,
-      image: background3Sprite,
-    }),
+    // new GenericObject({
+    //   x: background3Sprite.width,
+    //   y: 0,
+    //   image: background3Sprite,
+    // }),
 
-    new GenericObject({ x: -1, y: 0, image: hillsSprite }),
+    // new GenericObject({ x: -1, y: 0, image: hillsSprite }),
   ];
 
   //OBJETOS DA ESQUERDA
@@ -329,6 +367,9 @@ function animate() {
   player.update();
 
   //movimentacao utilizando objeto keys e switch
+  if (keys.right.pressed && scrollOffset >= 14155) {
+    mostrarTexto("AINDA NAO EXISTE NADA ALI");
+  }
 
   if (keys.right.pressed && player.position.x < 400) {
     player.velocity.x = player.speed;
@@ -361,12 +402,60 @@ function animate() {
       });
     }
   }
-
+  //contador de mortes
   //caiu no buraco
+  const messages = [
+    "Eu morri!",
+    "Denovo!",
+    "Tudo bem eu nao sinto nada!!",
+    "???????",
+    "Ta de boa",
+  ];
+
+  if (player.position.y > canvas.height) {
+    console.log("You lose");
+
+    count++;
+  }
+  const messagesLugar = [
+    "Continue assim!",
+    "Quase lá!",
+    "Você está fazendo ótimo!",
+    "Mantenha isso!",
+    "Não pare agora!",
+  ];
+
+  if (player.position.x > 1000 && player.position.x < 11000) {
+    console.log("Within range");
+
+    switch (true) {
+      case scrollOffset >= 1000 && scrollOffset < 2000:
+        mostrarTexto(messagesLugar[0]);
+        break;
+      case scrollOffset >= 2000 && scrollOffset < 3000:
+        mostrarTexto(messagesLugar[1]);
+        break;
+      case scrollOffset >= 3000 && scrollOffset < 4000:
+        mostrarTexto(messagesLugar[2]);
+        break;
+      case scrollOffset >= 4000 && scrollOffset < 5000:
+        mostrarTexto(messagesLugar[3]);
+        break;
+      case scrollOffset >= 5000 && scrollOffset < 6000:
+        mostrarTexto(messagesLugar[4]);
+        break;
+    }
+  }
+
   if (player.position.y > canvas.height) {
     init();
-    console.log("You lose");
+    messages.forEach(function (message, index) {
+      if (index === count % messages.length) {
+        mostrarTexto(message);
+      }
+    });
   }
+
   console.log(scrollOffset);
   //detector de colisao plataformas
   plataformas.forEach((plataforma) => {

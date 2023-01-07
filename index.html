@@ -28,18 +28,53 @@
     letter-spacing: 5px;
     color: white;
   }
+  h2 {
+    margin: 0;
+    font-size: 40px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: white;
+  }
+  span {
+    margin: 0;
+    font-size: 15px;
+    text-align: justify;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: white;
+  }
   .mainMenu {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
   }
+  .textMenu {
+    width: 80%;
+  }
+  #texto {
+    position: fixed;
+  }
 </style>
 
 <audio id="song" preload="auto" loop src="./assets/sound/cave.m4a.m4a"></audio>
 
 <div class="mainMenu">
-  <h1>Eu preciso de 5 minutos</h1>
+  <div class="textMenu">
+    <h2>Eu vou ser rapida.</h2>
+    <h2>Eu sou uma ideia</h2>
+    <h2>eu existia em algum lugar e consegui surgir na cabeça do autor</h2>
+    <h2>E agora eu existo aqui enquanto eu durar</h2>
+    <h2>
+      Da um role comigo, 5 minutos, faz o que voce quiser, não tem muito aqui...
+    </h2>
+  </div>
+  <span>
+    ps: o final da musica e pra dar suspense tipo: "aaaa ta acabando"</span
+  >
+  <hr />
+  <h1>Eu preciso existir por 5 minutos</h1>
   <div>
     <button id="start-button" onclick="audio.play()">Começar a aventura</button>
   </div>
@@ -48,6 +83,7 @@
   <h1 id="timer" style="display: none">05:00</h1>
   <canvas style="display: none"></canvas>
 </div>
+<div id="texto"></div>
 
 <script src="index.js" type="module"></script>
 <script>
