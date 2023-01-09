@@ -55,6 +55,7 @@ function createImage(imageSrc) {
 }
 //contem os elementos de textosd que vao ser deletados depois de x segundos
 
+let countdown = 5 * 60;
 function mostrarTexto(text) {
   const texto = document.querySelector("#texto");
   const h2 = document.createElement("h2");
@@ -73,14 +74,22 @@ function showRandomText() {
     "eu definitivamente vou aparecer em outro jogo",
     "um dia eu vou existir mais do que eu existo hoje",
     "eu nao gosto muito do deserto",
-    "ja pensou eu era só uma ideia",
+    "ja pensou eu era so uma ideia",
     "ele tava no meio da rua pensou e pluft eu existo",
     "o quanto eu posso existir?",
     "realmente obrigado pelo passeio",
-    "existir é ... estranho",
+    "existir e ... estranho",
+    "cara, como voce lida com o tedio?",
+    "lembrete: escrever sua rotina num papel",
+    "eu gosto dessa musica",
+    "lugarzinho limitado",
+    "pena que o javascript me limita",
   ];
   const randomIndex = Math.floor(Math.random() * texts.length);
   mostrarTexto(texts[randomIndex]);
+  if (countdown > 0) {
+    texts = [];
+  }
 }
 //verificacoes
 // console.log(canvas);
@@ -90,7 +99,6 @@ function startGame() {
   const intro = document.querySelector("div");
   const timer = document.querySelector("#timer");
 
-  let countdown = 5 * 60;
   //   let countdown = 5 * 60; <<< 5 minutos
 
   const interval = setInterval(() => {
@@ -99,9 +107,18 @@ function startGame() {
     // Calcula minutos restando
     const minutes = Math.floor(countdown / 60);
     const seconds = countdown % 60;
+    let minutesStr = minutes.toString();
+    let secondsStr = seconds.toString();
+
+    if (minutes < 10) {
+      minutesStr = minutesStr.padStart(2, "0");
+    }
+    if (seconds < 10) {
+      secondsStr = secondsStr.padStart(2, "0");
+    }
 
     // update com o tempo sobrando
-    timer.textContent = `${minutes}:${seconds}`;
+    timer.textContent = `${minutesStr}:${secondsStr}`;
 
     if (countdown === 0) {
       clearInterval(interval);
@@ -127,7 +144,7 @@ function triggerFinal() {
   timer.style.display = "none";
 
   const img = document.createElement("img");
-  if (scrollOffset < 500) {
+  if (scrollOffset < 2000) {
     img.src = "./assets/finalEscuro.png";
   }
   if (scrollOffset > 2000 && scrollOffset < 13000) {
@@ -135,12 +152,14 @@ function triggerFinal() {
   }
   if (scrollOffset > 13000) {
     img.src = "./assets/finaldeserto.png";
+  } else {
+    img.src = "./assets/finalEscuro.png";
   }
   img.style.display = "block";
   img.style.width = "100%";
   img.style.height = "100%";
   document.body.appendChild(img);
-  // clearInterval(interval);
+  clearInterval(interval);
 }
 
 //Classe define nosso Player
@@ -293,16 +312,30 @@ function init() {
   ];
   let previousWidth = 0;
   let previousHighWidth = 0;
+  let previousBodyWidth = 0;
+
   for (let i = 0; i < 60; i++) {
-    const randomNumber = Math.floor(Math.random() * (600 - 400 + 1) + 400);
+    const randomNumber = Math.floor(Math.random() * (700 - 400 + 1) + 400);
     plataformas.push(
       new Plataforma({
         x: previousHighWidth + randomNumber,
-        y: Math.floor(Math.random() * (370 - 170 + 1) + 170),
+        y: Math.floor(Math.random() * (400 - 10 + 1) + 10),
         image: plataformaSmallSprite,
       })
     );
     previousHighWidth += randomNumber;
+  }
+  for (let i = 0; i < 60; i++) {
+    const randomNumber = Math.floor(Math.random() * (1000 - 400 + 1) + 400);
+
+    plataformas.push(
+      new Plataforma({
+        x: previousBodyWidth + randomNumber,
+        y: Math.floor(Math.random() * (550 - 350 + 1) + 350),
+        image: plataformaSmallSprite,
+      })
+    );
+    previousBodyWidth += randomNumber;
   }
 
   for (let i = 0; i < 200; i++) {
@@ -310,12 +343,26 @@ function init() {
     plataformas.push(
       new Plataforma({
         x: previousWidth + randomNumber,
-        y: Math.floor(Math.random() * (570 - 400 + 1) + 400),
+        y: 600,
         image: platformSprite,
       })
     );
     previousWidth += randomNumber;
   }
+
+  // for (let i = 0; i < 200; i++) {
+  //   const randomNumber = Math.floor(Math.random() * (500 - 300 + 1) + 300);
+
+  //   plataformas.push(
+  //     new Plataforma({
+  //       x: previousBodyWidth + randomNumber,
+  //       y: 600,
+  //       image: platformSprite,
+  //       width: platformSprite.width,
+  //     })
+  //   );
+  //   previousBodyWidth += platformSprite.width + randomNumber;
+  // }
 
   //PLATAFORMAS DA ESQUERDA
   //em outra parte do codigo existe um forEach desenhnando cada objeto do array de generic objects
@@ -410,6 +457,18 @@ function animate() {
     "Tudo bem eu nao sinto nada!!",
     "???????",
     "Ta de boa",
+    "Vai ficar me matando?",
+    "La vai ele",
+    "Voce sabe usar o teclado?",
+    "La elx",
+    "mesmo com a hitbox te ajudando?",
+    "como voce consegue continuar morrendo?",
+    "apenas largue o teclado...",
+    "nao confie em cachorros pequenos",
+    "cringe...",
+    "quero café",
+    "qual o gosto de cafe?",
+    "os romanos controlam o mundo até hoje",
   ];
 
   if (player.position.y > canvas.height) {
